@@ -324,7 +324,7 @@ void TrackView::mouseMoveEvent( QMouseEvent * me )
 							"compacttrackbuttons" ).toInt()==1 ?
 		DEFAULT_SETTINGS_WIDGET_WIDTH_COMPACT + TRACK_OP_WIDTH_COMPACT :
 		DEFAULT_SETTINGS_WIDGET_WIDTH + TRACK_OP_WIDTH;
-	if (m_trackContainerView->allowRubberband() == true && pos.x() > widgetTotal)
+	if (m_trackContainerView->allowRubberband() == true && m_action == Action::None)
 	{
 		QWidget::mouseMoveEvent( me );
 	}

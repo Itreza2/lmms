@@ -612,7 +612,26 @@ void SongEditor::mousePressEvent(QMouseEvent *me)
 void SongEditor::mouseMoveEvent(QMouseEvent *me)
 {
 	m_mousePos = position(me);
-	updateRubberband();
+
+	if (rubberBandActive())
+	{
+		//auto scroll when the cursor go out of frame
+		int delta = 0;
+		if (m_mousePos.x() < m_trackHeadWidth)
+		{
+			delta = (m_mousePos.x() - m_trackHeadWidth) / pixelsPerBar() * m_rubberbandPixelsPerBar;
+			m_mousePos.setX(m_trackHeadWidth);
+		}
+		if (m_mousePos.x() > width())
+		{
+			delta = (m_mousePos.x() - width()) / pixelsPerBar() * m_rubberbandPixelsPerBar;
+		}
+		if (delta != 0)
+		{
+			m_leftRightScroll->setValue(m_leftRightScroll->value() + delta);
+		}
+		updateRubberband();
+	}
 	QWidget::mouseMoveEvent(me);
 }
 
