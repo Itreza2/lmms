@@ -616,19 +616,33 @@ void SongEditor::mouseMoveEvent(QMouseEvent *me)
 	if (rubberBandActive())
 	{
 		//auto scroll when the cursor go out of frame
-		int delta = 0;
+		int deltaX = 0, deltaY = 0;
 		if (m_mousePos.x() < m_trackHeadWidth)
 		{
-			delta = (m_mousePos.x() - m_trackHeadWidth) / pixelsPerBar() * m_rubberbandPixelsPerBar;
+			deltaX = (m_mousePos.x() - m_trackHeadWidth) / pixelsPerBar() * m_rubberbandPixelsPerBar;
+			//The rubber band should not overlap on the track heads
 			m_mousePos.setX(m_trackHeadWidth);
 		}
-		if (m_mousePos.x() > width())
+		else if (m_mousePos.x() > width())
 		{
-			delta = (m_mousePos.x() - width()) / pixelsPerBar() * m_rubberbandPixelsPerBar;
+			deltaX = (m_mousePos.x() - width()) / pixelsPerBar() * m_rubberbandPixelsPerBar;
 		}
-		if (delta != 0)
+		if (m_mousePos.y() < m_timeLine->height())
 		{
-			m_leftRightScroll->setValue(m_leftRightScroll->value() + delta);
+			deltaY = (m_mousePos.y() - m_timeLine->height()) / pixelsPerBar() * m_rubberbandPixelsPerBar;
+		}
+		else if (m_mousePos.y() > height())
+		{
+			deltaY = (m_mousePos.y() - height()) / pixelsPerBar() * m_rubberbandPixelsPerBar;
+		}
+		if (deltaX != 0)
+		{
+			m_leftRightScroll->setValue(m_leftRightScroll->value() + deltaX);
+		}
+		if (deltaY != 0)
+		{
+			QScrollBar* upDownScroll = contentWidget()->verticalScrollBar();
+			upDownScroll->setValue(upDownScroll->value() + deltaY);
 		}
 		updateRubberband();
 	}
