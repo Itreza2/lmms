@@ -2542,8 +2542,31 @@ void PianoRoll::mouseMoveEvent( QMouseEvent * me )
 		int key_num = getKey(pos.y());
 		int x = pos.x();
 
+		// auto scroll when using selection tool and the cursor is out of frame
+		if( me->buttons() & Qt::LeftButton &&
+			m_editMode == EditMode::Select &&
+			m_action == Action::SelectNotes )
+		{
+			int deltaX = pos.x() < m_whiteKeyWidth ? pos.x() - m_whiteKeyWidth :
+				pos.x() > width() - m_topBottomScroll->width() ?
+				pos.x() - width() + m_topBottomScroll->width() : 0;
+			int deltaY = pos.y() < keyAreaTop() ? pos.y() - keyAreaTop() :
+				pos.y() > keyAreaBottom() ? pos.y() - keyAreaBottom() : 0;
+
+			if (deltaX != 0)
+			{
+				m_leftRightScroll->setValue(m_leftRightScroll->value() + deltaX);
+			}
+			if (deltaY != 0)
+			{
+				m_topBottomScroll->setValue(m_topBottomScroll->value() + deltaY);
+				updateScrollbars();
+				key_num = getKey(pos.y());
+			}
+		}
+
 		// see if they clicked on the keyboard on the left
-		if (x < m_whiteKeyWidth && m_action == Action::None
+		else if (x < m_whiteKeyWidth && m_action == Action::None
 		    && ! edit_note && key_num != m_lastKey
 			&& me->buttons() & Qt::LeftButton )
 		{
